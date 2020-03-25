@@ -5,8 +5,12 @@ using UnityEngine;
 
 public class RocketController : MonoBehaviour
 {
+    [SerializeField] float rotateVar = 250f;
+    [SerializeField] float thrustForce = 25f;
+
     new Rigidbody rigidbody;
-    new AudioSource audioSource;
+    AudioSource audioSource;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -17,33 +21,54 @@ public class RocketController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        ProcessInput();
+        RotateShip();
+        Thruster();
     }
 
-    private void ProcessInput()
+    private void OnCollisionEnter(Collision collision)
     {
-        //thrusters
+        string colName = collision.gameObject.tag;
+        if(colName == "Friendly")
+        {
+            
+        }
+        else
+        {
+
+        }
+    }
+
+    private void RotateShip()
+    {
+        //take manual control of rotation
+        rigidbody.freezeRotation = true;
+        float rotationThisFrame = rotateVar * Time.deltaTime;
+
+        //rotate left
+        if (Input.GetKey(KeyCode.A))
+        {
+            transform.Rotate(Vector3.forward * rotationThisFrame);
+        }
+        //rotate right
+        else if (Input.GetKey(KeyCode.D))
+        {
+            transform.Rotate(-Vector3.forward * rotationThisFrame);
+        }
+
+        rigidbody.freezeRotation = false;
+    }
+
+    private void Thruster()
+    {
         if (Input.GetKey(KeyCode.Space))
         {
-            rigidbody.AddRelativeForce(new Vector3(0,8.5f,0));
-            if(!audioSource.isPlaying)
+            rigidbody.AddRelativeForce(Vector3.up * thrustForce);
+            if (!audioSource.isPlaying)
                 audioSource.Play();
         }
         else
         {
             audioSource.Stop();
         }
-
-        //rotate left
-        if (Input.GetKey(KeyCode.A))
-        {
-            transform.Rotate(Vector3.forward);
-        }
-        //rotate right
-        else if (Input.GetKey(KeyCode.D))
-        {
-            transform.Rotate(-Vector3.forward);
-        }
-
     }
 }
