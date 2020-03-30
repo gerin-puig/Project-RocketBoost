@@ -8,6 +8,9 @@ public class RocketController : MonoBehaviour
 {
     [SerializeField] float rotateVar = 250f;
     [SerializeField] float thrustForce = 25f;
+    [SerializeField] AudioClip mainEngine;
+    [SerializeField] AudioClip shipExplosion;
+    [SerializeField] AudioClip success;
 
     new Rigidbody rigidbody;
     AudioSource audioSource;
@@ -26,6 +29,7 @@ public class RocketController : MonoBehaviour
     {
         rigidbody = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
+        
     }
 
     // Update is called once per frame
@@ -33,8 +37,8 @@ public class RocketController : MonoBehaviour
     {
         if (state == State.Alive)
         {
-            RotateShip();
-            Thruster();
+            RespondToRotateInput();
+            RespondToThrustInput();
         }
     }
 
@@ -47,6 +51,8 @@ public class RocketController : MonoBehaviour
         if(colName == "Finish")
         {
             state = State.Transcending;
+            audioSource.Stop();
+            audioSource.PlayOneShot(success);
             Invoke("LoadNextScene", 2f);
         }
         else if(colName == "Friendly")
@@ -56,6 +62,8 @@ public class RocketController : MonoBehaviour
         else
         {
             state = State.Dying;
+            audioSource.Stop();
+            audioSource.PlayOneShot(shipExplosion);
             Invoke("PlayerDeath", 2f);
         }
     }
@@ -71,7 +79,7 @@ public class RocketController : MonoBehaviour
         state = State.Alive;
     }
 
-    private void RotateShip()
+    private void RespondToRotateInput()
     {
         //take manual control of rotation
         rigidbody.freezeRotation = true;
@@ -91,17 +99,23 @@ public class RocketController : MonoBehaviour
         rigidbody.freezeRotation = false;
     }
 
-    private void Thruster()
+    private void RespondToThrustInput()
     {
         if (Input.GetKey(KeyCode.Space))
         {
-            rigidbody.AddRelativeForce(Vector3.up * thrustForce);
-            if (!audioSource.isPlaying)
-                audioSource.Play();
+            ApplyThrust();
         }
         else
         {
             audioSource.Stop();
         }
     }
+
+    private void ApplyThrust()
+    {
+        rigidbody.AddRelativeForce(Vector3.up * thrustForce);
+        if (!audioSource.isPlaying)
+            audioSource.PlayOneShot(mainEngine);
+    }
+
 }
