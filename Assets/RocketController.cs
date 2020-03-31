@@ -8,9 +8,15 @@ public class RocketController : MonoBehaviour
 {
     [SerializeField] float rotateVar = 250f;
     [SerializeField] float thrustForce = 25f;
+    [SerializeField] float levelLoadDelay = 2f;
+
     [SerializeField] AudioClip mainEngine;
     [SerializeField] AudioClip shipExplosion;
     [SerializeField] AudioClip success;
+
+    [SerializeField] ParticleSystem mainEngineParticles;
+    [SerializeField] ParticleSystem shipExplosionParticles;
+    [SerializeField] ParticleSystem successParticles;
 
     new Rigidbody rigidbody;
     AudioSource audioSource;
@@ -29,7 +35,6 @@ public class RocketController : MonoBehaviour
     {
         rigidbody = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
-        
     }
 
     // Update is called once per frame
@@ -50,10 +55,7 @@ public class RocketController : MonoBehaviour
         string colName = collision.gameObject.tag;
         if(colName == "Finish")
         {
-            state = State.Transcending;
-            audioSource.Stop();
-            audioSource.PlayOneShot(success);
-            Invoke("LoadNextScene", 2f);
+            StartSuccessSequence();
         }
         else if(colName == "Friendly")
         {
@@ -61,11 +63,26 @@ public class RocketController : MonoBehaviour
         }
         else
         {
-            state = State.Dying;
-            audioSource.Stop();
-            audioSource.PlayOneShot(shipExplosion);
-            Invoke("PlayerDeath", 2f);
+            StartDeathSequence();
         }
+    }
+
+    private void StartDeathSequence()
+    {
+        state = State.Dying;
+        audioSource.Stop();
+        audioSource.PlayOneShot(shipExplosion);
+        shipExplosionParticles.Play();
+        Invoke("PlayerDeath", levelLoadDelay);
+    }
+
+    private void StartSuccessSequence()
+    {
+        state = State.Transcending;
+        audioSource.Stop();
+        audioSource.PlayOneShot(success);
+        successParticles.Play();
+        Invoke("LoadNextScene", levelLoadDelay);
     }
 
     private void LoadNextScene()
@@ -108,14 +125,19 @@ public class RocketController : MonoBehaviour
         else
         {
             audioSource.Stop();
+            if(mainEngineParticles.isPlaying)
+                mainEngineParticles.Stop();
         }
     }
 
     private void ApplyThrust()
     {
-        rigidbody.AddRelativeForce(Vector3.up * thrustForce);
+        rigidbody.AddRelativeForce(Vector3.up * thrustForce * Time.deltaTime);
         if (!audioSource.isPlaying)
             audioSource.PlayOneShot(mainEngine);
+
+        if(!mainEngineParticles.isPlaying)
+            mainEngineParticles.Play();
     }
 
 }
