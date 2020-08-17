@@ -87,7 +87,7 @@ public class RocketController : MonoBehaviour
 
     private void LoadNextScene()
     {
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 
     private void PlayerDeath()
