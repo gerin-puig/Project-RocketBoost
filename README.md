@@ -1,5 +1,5 @@
 # Project-RocketBoost
-Controlling a rocket in a maze.
+Controlling a rocket through a maze.
 
 # Objective
 Land on the green landing pad without hitting your rocket onto the walls.
