@@ -2,7 +2,7 @@
 Controlling a rocket in a maze.
 
 # Objective
-Land of the green landing pad without hitting your rocket into the walls.
+Land on the green landing pad without hitting your rocket onto the walls.
 
 # Controls
 - A - rotate left
