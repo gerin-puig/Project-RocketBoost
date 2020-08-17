@@ -71,7 +71,7 @@ public class RocketController : MonoBehaviour
     {
         state = State.Dying;
         audioSource.Stop();
-        audioSource.PlayOneShot(shipExplosion);
+        audioSource.PlayOneShot(shipExplosion,0.5f);
         shipExplosionParticles.Play();
         Invoke("PlayerDeath", levelLoadDelay);
     }
@@ -134,7 +134,7 @@ public class RocketController : MonoBehaviour
     {
         rigidbody.AddRelativeForce(Vector3.up * thrustForce * Time.deltaTime);
         if (!audioSource.isPlaying)
-            audioSource.PlayOneShot(mainEngine);
+            audioSource.PlayOneShot(mainEngine,0.95f);
 
         if(!mainEngineParticles.isPlaying)
             mainEngineParticles.Play();
